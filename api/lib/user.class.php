@@ -7,7 +7,10 @@ class user
 
     public static function init()
     {
-        session_start();
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
 
         if(!empty($_SESSION['user_id']) && !empty($_SESSION['user_hash']))
         {
@@ -32,14 +35,12 @@ class user
         }
 
         static::$user = $user;
-        
+
         static::$initialized = true;
     }
 
     public static function createUser()
     {
-        static::$initialized OR static::init();
-
         $auth_hash = substr(sha1(microtime(true).'muhehe'), rand(0, 10), 8);
         $expires_at = date('Y-m-d H:i:s', time()+86400);
         $query = "
