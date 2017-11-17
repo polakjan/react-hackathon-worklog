@@ -6,7 +6,7 @@ class tasksController
     {
         $query = "
             SELECT * 
-            FROM `task`
+            FROM `react_hackathon_task`
             WHERE 1
             ORDER BY `name` ASC
         ";
@@ -31,7 +31,7 @@ class tasksController
         if($valid)
         {
             $query = "
-                INSERT INTO `task`
+                INSERT INTO `react_hackathon_task`
                 (`name`)
                 VALUES
                 (?)
@@ -41,8 +41,8 @@ class tasksController
             $id = db::getLastInsertId();
 
             $query = "
-                SELECT `task`.*
-                FROM `task`
+                SELECT `react_hackathon_task`.*
+                FROM `react_hackathon_task`
                 WHERE `id` = ?
             ";
             $task = db::fetch($query, $id);
@@ -55,13 +55,13 @@ class tasksController
     public function totals()
     {
         $query = "
-            SELECT `task`.*, SUM(`log`.`duration`) AS total
-            FROM `log`
-            LEFT JOIN `task`
-                ON `log`.`task_id` = `task`.`id`
+            SELECT `react_hackathon_task`.*, SUM(`react_hackathon_log`.`duration`) AS total
+            FROM `react_hackathon_log`
+            LEFT JOIN `react_hackathon_task`
+                ON `react_hackathon_log`.`task_id` = `react_hackathon_task`.`id`
             WHERE 1
-            GROUP BY `log`.`task_id`
-            ORDER BY `task`.`name` ASC
+            GROUP BY `react_hackathon_log`.`task_id`
+            ORDER BY `react_hackathon_task`.`name` ASC
         ";
         $tasks = db::fetchAll($query);
 

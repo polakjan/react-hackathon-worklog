@@ -1,14 +1,46 @@
 <?php
 
-class logController
+class logsController
 {
     public function index()
     {
+        $limit = intval(request::get('limit', 10));
+        $offset = intval(request::get('offset', 0));
+        $order_by = request::get('order_by', 'logged_at');
+        $order_way = request::get('order_by', 'asc');
+        $user_id = intval(request::get('user_id', null));
+        $task_id = intval(request::get('task_id', null));
+
+        switch(strtoupper($orderway))
+        {
+            default:
+            case 'ASC':
+                $orderway = 'ASC';
+                break;
+            case 'DESC':
+                $orderway = 'DESC';
+                break;
+        }
+        
+        switch($order_by)
+        {
+            default:
+            case 'logged_at':
+                $orderby = "`logged_at` ".$orderway;
+                break;
+            case 'duration':
+                $orderby = "`duration` ".$orderway;
+                break;
+        }
+
         $query = "
             SELECT * 
-            FROM `log`
+            FROM `react_hackathon_log`
             WHERE 1
-            ORDER BY `logged_at` ASC
+            ".(!empty($user_id) ? " AND `user_id` = {$user_id}" : "")."
+            ".(!empty($task_id) ? " AND `task_id` = {$task_id}" : "")."
+            {$orderby}
+            LIMIT {$offset}, {$limit}
         ";
         $tasks = db::fetchAll($query);
 
@@ -22,7 +54,7 @@ class logController
 
         $query = "
             SELECT * 
-            FROM `log`
+            FROM `react_hackathon_log`
             WHERE 1
             ORDER BY `logged_at` DESC
             LIMIT {$offset}, {$limit}
@@ -53,7 +85,7 @@ class logController
             $logged_at = date('Y-m-d H:i:s');
 
             $query = "
-                INSERT INTO `log`
+                INSERT INTO `react_hackathon_log`
                 (`task_id`, `duration`, `logged_at`)
                 VALUES
                 (?, ?, ?)
@@ -63,8 +95,8 @@ class logController
             $id = db::getLastInsertId();
 
             $query = "
-                SELECT `log`.*
-                FROM `log`
+                SELECT `react_hackathon_log`.*
+                FROM `react_hackathon_log`
                 WHERE `id` = ?
             ";
             $task = db::fetch($query, $id);
