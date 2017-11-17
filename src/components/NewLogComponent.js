@@ -14,7 +14,7 @@ export default class NewLog extends React.Component
 
         this.state = {
             time: 10,
-            what: '',
+            what: this.props.tasks.length ? this.props.tasks[0].id : '',
         }
     }
 
@@ -22,7 +22,7 @@ export default class NewLog extends React.Component
 
         $.ajax({
             method: 'post',
-            url: config.api_url + 'log/create',
+            url: config.api_url + 'logs/create',
             dataType: 'json',
             data: {
                 duration: this.state.time,

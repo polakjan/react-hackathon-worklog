@@ -6,4 +6,14 @@ class userController
     {
         return user::getUser();
     }
+
+    public function display()
+    {
+        return user::getUser();
+    }
+
+    public function id()
+    {
+        return user::getUser()->id;
+    }
 }

@@ -4,14 +4,14 @@ class logsController
 {
     public function index()
     {
-        $limit = intval(request::get('limit', 10));
+        $limit = intval(request::get('limit', 0));
         $offset = intval(request::get('offset', 0));
         $order_by = request::get('order_by', 'logged_at');
         $order_way = request::get('order_by', 'asc');
         $user_id = intval(request::get('user_id', null));
         $task_id = intval(request::get('task_id', null));
 
-        switch(strtoupper($orderway))
+        switch(strtoupper($order_way))
         {
             default:
             case 'ASC':
@@ -34,10 +34,13 @@ class logsController
         }
 
         $query = "
-            SELECT * 
+            SELECT `react_hackathon_log`.*,
+                `react_hackathon_task`.`name` AS task_name
             FROM `react_hackathon_log`
+            LEFT JOIN `react_hackathon_task`
+              ON `react_hackathon_log`.`task_id` = `react_hackathon_task`.`id`
             WHERE 1
-            ".(!empty($user_id) ? " AND `user_id` = {$user_id}" : "")."
+            ".(!empty($user_id) ? " AND `react_hackathon_log`.`user_id` = {$user_id}" : "")."
             ".(!empty($task_id) ? " AND `task_id` = {$task_id}" : "")."
             ORDER BY {$orderby}
             LIMIT {$offset}, {$limit}
@@ -53,11 +56,14 @@ class logsController
         $offset = intval($offset);
 
         $query = "
-            SELECT * 
+            SELECT `react_hackathon_log`.*,
+                `react_hackathon_task`.`name` AS task_name
             FROM `react_hackathon_log`
+            LEFT JOIN `react_hackathon_task`
+                ON `react_hackathon_log`.`task_id` = `react_hackathon_task`.`id`
             WHERE 1
             ORDER BY `logged_at` DESC
-            LIMIT {$offset}, {$limit}
+            ".(!empty($limit) ? "LIMIT {$offset}, {$limit}": "")."
         ";
         $tasks = db::fetchAll($query);
 
@@ -75,9 +81,9 @@ class logsController
             return ['error' => 'task_id must not be empty'];
         }
 
-        if(!$duration)
+        if($duration === null)
         {
-            return ['error' => 'duration must not be empty'];
+            return ['error' => 'duration must be set'];
         }
 
         if($valid)
@@ -89,7 +95,7 @@ class logsController
                 INSERT INTO `react_hackathon_log`
                 (`user_id`, `task_id`, `duration`, `logged_at`)
                 VALUES
-                (?, ?, ?)
+                (?, ?, ?, ?)
             ";
             db::query($query, [$user_id, $task_id, $duration, $logged_at]);
 
@@ -105,5 +111,11 @@ class logsController
             return $task;
         }
 
+    }
+
+
+    public function user()
+    {
+        return user::getUser();
     }
 }

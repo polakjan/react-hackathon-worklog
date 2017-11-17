@@ -4,7 +4,11 @@ class system
 {
     public static function getPageUri()
     {
-        return strtolower(trim(substr($_SERVER['REQUEST_URI'], strlen(dirname($_SERVER['SCRIPT_NAME']))), ' /'));
+        $uri = strtolower(trim(substr($_SERVER['REQUEST_URI'], strlen(dirname($_SERVER['SCRIPT_NAME']))), ' /'));
+
+        $parts = explode('?', $uri.'?');
+
+        return $parts[0];
     }
 
     public static function reslash($s)
@@ -19,6 +23,7 @@ class system
 
     public static function sendJsonHeaders()
     {
+        header('Access-Control-Allow-Credentials: true');
         header("Access-Control-Allow-Origin: *");
         header('Cache-Control: no-cache, must-revalidate');
         header('Content-type: application/json');

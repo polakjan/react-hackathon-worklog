@@ -3,10 +3,10 @@ class db
 {
     // database connection information
     // (modify as needed for every project)
-    protected static $host = 'wm102.wedos.net';
-    protected static $username = 'a115607_cbccz';
-    protected static $password = 'wLetVLmg';
-    protected static $database = 'd115607_cbccz';
+    protected static $host = 'localhost';
+    protected static $username = 'root';
+    protected static $password = 'rootroot';
+    protected static $database = 'react_worklog';
     protected static $pdo = null;
     /**
      * return the pdo object for the connection
