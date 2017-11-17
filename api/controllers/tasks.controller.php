@@ -55,12 +55,15 @@ class tasksController
     public function totals()
     {
         $query = "
-            SELECT `react_hackathon_task`.*, SUM(`react_hackathon_log`.`duration`) AS total
-            FROM `react_hackathon_log`
-            LEFT JOIN `react_hackathon_task`
-                ON `react_hackathon_log`.`task_id` = `react_hackathon_task`.`id`
+            SELECT `react_hackathon_task`.*, COALESCE(`totals`.total, 0) AS total
+            FROM `react_hackathon_task`
+            LEFT JOIN (
+                SELECT `react_hackathon_log`.`task_id`, SUM(`react_hackathon_log`.`duration`) AS total
+                FROM `react_hackathon_log`
+                GROUP BY `react_hackathon_log`.`task_id`
+            ) totals
+                ON `react_hackathon_task`.`id` = `totals`.`task_id`
             WHERE 1
-            GROUP BY `react_hackathon_log`.`task_id`
             ORDER BY `react_hackathon_task`.`name` ASC
         ";
         $tasks = db::fetchAll($query);

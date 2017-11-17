@@ -39,7 +39,7 @@ class logsController
             WHERE 1
             ".(!empty($user_id) ? " AND `user_id` = {$user_id}" : "")."
             ".(!empty($task_id) ? " AND `task_id` = {$task_id}" : "")."
-            {$orderby}
+            ORDER BY {$orderby}
             LIMIT {$offset}, {$limit}
         ";
         $tasks = db::fetchAll($query);
@@ -83,14 +83,15 @@ class logsController
         if($valid)
         {
             $logged_at = date('Y-m-d H:i:s');
+            $user_id = user::getUser()->id;
 
             $query = "
                 INSERT INTO `react_hackathon_log`
-                (`task_id`, `duration`, `logged_at`)
+                (`user_id`, `task_id`, `duration`, `logged_at`)
                 VALUES
                 (?, ?, ?)
             ";
-            db::query($query, [$task_id, $duration, $logged_at]);
+            db::query($query, [$user_id, $task_id, $duration, $logged_at]);
 
             $id = db::getLastInsertId();
 

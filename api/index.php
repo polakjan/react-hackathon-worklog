@@ -2,7 +2,10 @@
 
 require_once 'lib/system.class.php';
 require_once 'lib/db.class.php';
+require_once 'lib/user.class.php';
 require_once 'lib/request.class.php';
+
+user::init();
 
 $uri = system::getPageUri();
 
